@@ -7,21 +7,16 @@ def input_error(func):
             result = func(*args)
             return result
         except KeyError:
-            return "KeyError"
+            return "KeyError. This name is not in phone-book"
         except ValueError:
-            return "ValueError"
+            return "ValueError. Phone number must be from digit"
         except TypeError:
-            return "IndexError"
-        except TypeError:
-            return "IndexError"
+            return "TypeError. Unknown command"
+        except IndexError:
+            return "IndexError. Give me name and phone please"
     return inner
 
-    #"Enter user name", 
-    #"Give me name and phone please" 
-    
-    #обробляти винятки, що виникають у функціях-handler (KeyError, ValueError, IndexError) та повертати відповідну відповідь користувачеві.
-
-
+@input_error    
 def return_action(mode):
      
     if mode.lower() in list_good_bye:
@@ -32,17 +27,21 @@ def return_action(mode):
     id_command = mode.split()[0]
     return MODES[id_command.lower()]
 
+
 def show_all(user_input):
      return phone_dict
 
+@input_error
 def add_phone(user_input):
     text = user_input.split()
-    phone_dict[text[1]] = text[2]
+    phone_dict[text[1]] = int(text[2])
     return f'Add {text[1]} - {text[2]}'
 
+@input_error
 def change_phone(user_input):
     text = user_input.split()
-    phone_dict[text[1]] = text[2]
+    elem = phone_dict[text[1]] 
+    phone_dict[elem] = int(text[2])
     return f'Change {text[1]} - {text[2]}'
 
 def hello(user_input):
@@ -51,7 +50,7 @@ def hello(user_input):
 def good_bye(user_input):
     return "Good bye!"
     
-
+@input_error
 def phone(user_input):
     text = user_input.split()
     return f'Phone {text[1]} is {phone_dict[text[1]]}'
@@ -65,7 +64,7 @@ MODES = {
     'exit': good_bye
     }
 
-@input_error
+
 def get_function(command):
     return return_action(command)
 
@@ -74,7 +73,9 @@ def main():
     while True:
         user_input = input("Enter command: ")
         action = get_function(user_input)
-        print(action(user_input))
+
+        result = action(user_input)
+        print(result)
         if action == good_bye:
             exit()
              
